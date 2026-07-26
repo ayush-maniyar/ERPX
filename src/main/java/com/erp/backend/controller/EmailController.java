@@ -1,5 +1,6 @@
 package com.erp.backend.controller;
 
+import com.erp.backend.dto.MessageResponse;
 import com.erp.backend.dto.SendTagEmailRequest;
 import com.erp.backend.service.EmailService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,8 +17,8 @@ public class EmailController {
     private EmailService emailService;
 
     @PostMapping("/send-by-tag")
-    public ResponseEntity<String> sendEmailToGroup(@RequestBody SendTagEmailRequest request) {
+    public ResponseEntity<MessageResponse> sendEmailToGroup(@RequestBody SendTagEmailRequest request) {
         String response = emailService.sendEmailToGroup(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new MessageResponse(response));
     }
 }

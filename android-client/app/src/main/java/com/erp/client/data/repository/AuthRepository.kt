@@ -15,7 +15,11 @@ class AuthRepository(
 ) {
 
     suspend fun register(name: String, email: String, password: String, role: Role): ApiResult<String> {
-        return safeApiCall { apiService.register(RegisterRequest(name, email, password, role)) }
+        val result = safeApiCall { apiService.register(RegisterRequest(name, email, password, role)) }
+        return when (result) {
+            is ApiResult.Success -> ApiResult.Success(result.data.message)
+            is ApiResult.Failure -> result
+        }
     }
 
     suspend fun login(email: String, password: String): ApiResult<UserSession> {

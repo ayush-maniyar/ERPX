@@ -14,8 +14,12 @@ class ClassRepository(private val apiService: ApiService) {
         meetLink: String,
         scheduledTime: String
     ): ApiResult<String> {
-        return safeApiCall {
+        val result = safeApiCall {
             apiService.createVideoClass(CreateVideoClassRequest(title, targetTag, meetLink, scheduledTime))
+        }
+        return when (result) {
+            is ApiResult.Success -> ApiResult.Success(result.data.message)
+            is ApiResult.Failure -> result
         }
     }
 

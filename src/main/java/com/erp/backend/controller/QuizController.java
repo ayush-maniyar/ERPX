@@ -1,6 +1,7 @@
 package com.erp.backend.controller;
 
 import com.erp.backend.dto.CreateQuizRequest;
+import com.erp.backend.dto.MessageResponse;
 import com.erp.backend.dto.SubmitQuizRequest;
 import com.erp.backend.model.Attendance;
 import com.erp.backend.service.QuizService;
@@ -19,16 +20,16 @@ public class QuizController {
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('TEACHER')")
-    public ResponseEntity<String> createQuiz(@RequestBody CreateQuizRequest request) {
+    public ResponseEntity<MessageResponse> createQuiz(@RequestBody CreateQuizRequest request) {
         String response = quizService.createQuiz(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new MessageResponse(response));
     }
 
     @PostMapping("/submit")
     @PreAuthorize("hasRole('STUDENT')")
-    public ResponseEntity<String> submitQuiz(@RequestBody SubmitQuizRequest request) {
+    public ResponseEntity<MessageResponse> submitQuiz(@RequestBody SubmitQuizRequest request) {
         String response = quizService.submitQuiz(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new MessageResponse(response));
     }
 
     @GetMapping("/attendance/{email}")

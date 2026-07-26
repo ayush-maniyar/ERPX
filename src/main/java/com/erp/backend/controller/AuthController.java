@@ -2,6 +2,7 @@ package com.erp.backend.controller;
 
 import com.erp.backend.dto.JwtResponse;
 import com.erp.backend.dto.LoginRequest;
+import com.erp.backend.dto.MessageResponse;
 import com.erp.backend.dto.RegisterRequest;
 import com.erp.backend.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +17,9 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody RegisterRequest request) {
+    public ResponseEntity<MessageResponse> registerUser(@RequestBody RegisterRequest request) {
         String response = authService.registerUser(request);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(new MessageResponse(response));
     }
 
     @PostMapping("/login")

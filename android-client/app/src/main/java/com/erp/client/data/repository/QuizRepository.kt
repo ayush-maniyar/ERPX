@@ -17,8 +17,12 @@ class QuizRepository(private val apiService: ApiService) {
         questions: List<String>,
         correctAnswers: List<String>
     ): ApiResult<String> {
-        return safeApiCall {
+        val result = safeApiCall {
             apiService.createQuiz(CreateQuizRequest(title, targetTag, questions, correctAnswers))
+        }
+        return when (result) {
+            is ApiResult.Success -> ApiResult.Success(result.data.message)
+            is ApiResult.Failure -> result
         }
     }
 
@@ -27,8 +31,12 @@ class QuizRepository(private val apiService: ApiService) {
         studentEmail: String,
         submittedAnswers: List<String>
     ): ApiResult<String> {
-        return safeApiCall {
+        val result = safeApiCall {
             apiService.submitQuiz(SubmitQuizRequest(quizId, studentEmail, submittedAnswers))
+        }
+        return when (result) {
+            is ApiResult.Success -> ApiResult.Success(result.data.message)
+            is ApiResult.Failure -> result
         }
     }
 
