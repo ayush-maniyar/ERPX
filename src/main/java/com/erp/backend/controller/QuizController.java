@@ -6,6 +6,7 @@ import com.erp.backend.model.Attendance;
 import com.erp.backend.service.QuizService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
@@ -17,32 +18,23 @@ public class QuizController {
     private QuizService quizService;
 
     @PostMapping("/create")
+    @PreAuthorize("hasRole('TEACHER')")
     public ResponseEntity<String> createQuiz(@RequestBody CreateQuizRequest request) {
-        try {
-            String response = quizService.createQuiz(request);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        String response = quizService.createQuiz(request);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/submit")
+    @PreAuthorize("hasRole('STUDENT')")
     public ResponseEntity<String> submitQuiz(@RequestBody SubmitQuizRequest request) {
-        try {
-            String response = quizService.submitQuiz(request);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        String response = quizService.submitQuiz(request);
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/attendance/{email}")
-    public ResponseEntity<?> getAttendance(@PathVariable String email) {
-        try {
-            List<Attendance> attendanceList = quizService.getStudentAttendance(email);
-            return ResponseEntity.ok(attendanceList);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    @PreAuthorize("hasAnyRole('STUDENT', 'TEACHER', 'ADMIN')")
+    public ResponseEntity<List<Attendance>> getAttendance(@PathVariable String email) {
+        List<Attendance> attendanceList = quizService.getStudentAttendance(email);
+        return ResponseEntity.ok(attendanceList);
     }
 }

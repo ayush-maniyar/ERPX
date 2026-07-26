@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- Cleartext HTTP is permitted only for local development against the
+         Android emulator's host loopback and a physical device on the same LAN.
+         Point apiBaseUrl at an https:// host for anything beyond local dev. -->
+    <domain-config cleartextTrafficPermitted="true">
+        <domain includeSubdomains="false">10.0.2.2</domain>
+        <domain includeSubdomains="false">localhost</domain>
+        <domain includeSubdomains="false">192.168.0.107</domain>
+    </domain-config>
+</network-security-config>

@@ -1,6 +1,6 @@
 package com.erp.backend.controller;
 
-import com.erp.backend.dto.AuthResponse;
+import com.erp.backend.dto.JwtResponse;
 import com.erp.backend.dto.LoginRequest;
 import com.erp.backend.dto.RegisterRequest;
 import com.erp.backend.service.AuthService;
@@ -17,21 +17,13 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity<String> registerUser(@RequestBody RegisterRequest request) {
-        try {
-            String response = authService.registerUser(request);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+        String response = authService.registerUser(request);
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody LoginRequest request) {
-        try {
-            AuthResponse response = authService.loginUser(request);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<JwtResponse> loginUser(@RequestBody LoginRequest request) {
+        JwtResponse response = authService.loginUser(request);
+        return ResponseEntity.ok(response);
     }
 }
