@@ -20,7 +20,7 @@ android {
         buildConfigField(
             "String",
             "API_BASE_URL",
-            "\"${project.findProperty("apiBaseUrl") ?: "http://10.0.2.2:8080/"}\""
+            "\"${project.findProperty("apiBaseUrl") ?: "http://192.168.1.41/"}\""
         )
     }
 
