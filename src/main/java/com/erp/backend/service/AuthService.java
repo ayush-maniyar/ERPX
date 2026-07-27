@@ -1,10 +1,12 @@
 package com.erp.backend.service;
 
-import com.erp.backend.dto.AuthResponse;
+import com.erp.backend.dto.JwtResponse;
 import com.erp.backend.dto.LoginRequest;
 import com.erp.backend.dto.RegisterRequest;
 import com.erp.backend.model.User;
 import com.erp.backend.repository.UserRepository;
+import com.erp.backend.security.JwtTokenProvider;
+import com.erp.backend.security.UserPrincipal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -17,6 +19,9 @@ public class AuthService {
 
     @Autowired
     private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     public String registerUser(RegisterRequest request) {
         if (userRepository.existsByEmail(request.getEmail())) {
@@ -34,7 +39,7 @@ public class AuthService {
         return "User registered successfully!";
     }
 
-    public AuthResponse loginUser(LoginRequest request) {
+    public JwtResponse loginUser(LoginRequest request) {
         // 1. Check if user exists
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("Error: Invalid email or password!"));
@@ -44,7 +49,8 @@ public class AuthService {
             throw new RuntimeException("Error: Invalid email or password!");
         }
 
-        // 3. Return user profile
-        return new AuthResponse("Login successful!", user.getId(), user.getName(), user.getEmail(), user.getRole());
+        // 3. Issue JWT and return user profile
+        String token = jwtTokenProvider.generateToken(UserPrincipal.fromUser(user));
+        return new JwtResponse("Login successful!", token, user.getId(), user.getName(), user.getEmail(), user.getRole());
     }
 }

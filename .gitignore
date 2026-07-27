@@ -1,6 +1,12 @@
 HELP.md
 target/
 .mvn/wrapper/maven-wrapper.jar
+
+### Local H2 database files ###
+/data/
+
+### Logs ###
+*.log
 !**/src/main/**/target/
 !**/src/test/**/target/
 

@@ -1,7 +1,8 @@
 package com.erp.backend.controller;
 
-import com.erp.backend.dto.AuthResponse;
+import com.erp.backend.dto.JwtResponse;
 import com.erp.backend.dto.LoginRequest;
+import com.erp.backend.dto.MessageResponse;
 import com.erp.backend.dto.RegisterRequest;
 import com.erp.backend.service.AuthService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,22 +17,14 @@ public class AuthController {
     private AuthService authService;
 
     @PostMapping("/register")
-    public ResponseEntity<String> registerUser(@RequestBody RegisterRequest request) {
-        try {
-            String response = authService.registerUser(request);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<MessageResponse> registerUser(@RequestBody RegisterRequest request) {
+        String response = authService.registerUser(request);
+        return ResponseEntity.ok(new MessageResponse(response));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> loginUser(@RequestBody LoginRequest request) {
-        try {
-            AuthResponse response = authService.loginUser(request);
-            return ResponseEntity.ok(response);
-        } catch (RuntimeException e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
+    public ResponseEntity<JwtResponse> loginUser(@RequestBody LoginRequest request) {
+        JwtResponse response = authService.loginUser(request);
+        return ResponseEntity.ok(response);
     }
 }
