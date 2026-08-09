@@ -1,6 +1,7 @@
 package com.erp.client.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -11,6 +12,7 @@ import com.erp.client.data.AppContainer
 import com.erp.client.domain.model.Role
 import com.erp.client.ui.screens.auth.LoginScreen
 import com.erp.client.ui.screens.auth.RegisterScreen
+import com.erp.client.ui.screens.settings.ServerSettingsScreen
 import com.erp.client.ui.screens.student.AttendanceHistoryScreen
 import com.erp.client.ui.screens.student.ClassLinksScreen
 import com.erp.client.ui.screens.student.QuizTakingScreen
@@ -40,12 +42,46 @@ fun ErpNavHost(container: AppContainer) {
 
     val session = authViewModel.currentSession()
     val startDestination = when {
+        // First run on a new device: ask for the server address before anything
+        // that needs the network, so the user never hits silent failures.
+        !container.serverConfig.isConfigured() -> Routes.SERVER_SETTINGS
         session == null -> Routes.LOGIN
         session.role == Role.TEACHER -> Routes.TEACHER_DASHBOARD
         else -> Routes.STUDENT_DASHBOARD
     }
 
+    // The backend rejected the stored token — return to login rather than
+    // leaving the user on a dashboard where every request fails.
+    LaunchedEffect(Unit) {
+        container.sessionExpired.collect {
+            navController.navigate(Routes.LOGIN) {
+                popUpTo(0) { inclusive = true }
+            }
+        }
+    }
+
     NavHost(navController = navController, startDestination = startDestination) {
+        composable(Routes.SERVER_SETTINGS) {
+            ServerSettingsScreen(
+                serverConfig = container.serverConfig,
+                onSaved = {
+                    val destination = when {
+                        session == null -> Routes.LOGIN
+                        session.role == Role.TEACHER -> Routes.TEACHER_DASHBOARD
+                        else -> Routes.STUDENT_DASHBOARD
+                    }
+                    navController.navigate(destination) {
+                        popUpTo(0) { inclusive = true }
+                    }
+                },
+                onNavigateBack = if (container.serverConfig.isConfigured()) {
+                    { navController.popBackStack() }
+                } else {
+                    null
+                }
+            )
+        }
+
         composable(Routes.LOGIN) {
             LoginScreen(
                 authViewModel = authViewModel,
@@ -55,7 +91,8 @@ fun ErpNavHost(container: AppContainer) {
                         popUpTo(Routes.LOGIN) { inclusive = true }
                     }
                 },
-                onNavigateToRegister = { navController.navigate(Routes.REGISTER) }
+                onNavigateToRegister = { navController.navigate(Routes.REGISTER) },
+                onNavigateToServerSettings = { navController.navigate(Routes.SERVER_SETTINGS) }
             )
         }
 

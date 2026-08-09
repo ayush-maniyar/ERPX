@@ -12,6 +12,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -32,15 +33,18 @@ import com.erp.client.viewmodel.UiState
 fun LoginScreen(
     authViewModel: AuthViewModel,
     onLoginSuccess: (UserSession) -> Unit,
-    onNavigateToRegister: () -> Unit
+    onNavigateToRegister: () -> Unit,
+    onNavigateToServerSettings: () -> Unit = {}
 ) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
     val loginState by authViewModel.loginState.collectAsState()
 
-    if (loginState is UiState.Success) {
-        onLoginSuccess((loginState as UiState.Success<UserSession>).data)
+    // Navigate as a side effect, not during composition — calling it inline
+    // re-fires the callback on every recomposition.
+    LaunchedEffect(loginState) {
+        (loginState as? UiState.Success<UserSession>)?.let { onLoginSuccess(it.data) }
     }
 
     Column(
@@ -87,6 +91,10 @@ fun LoginScreen(
 
         TextButton(onClick = onNavigateToRegister) {
             Text("Don't have an account? Register")
+        }
+
+        TextButton(onClick = onNavigateToServerSettings) {
+            Text("Can't connect? Change server address")
         }
     }
 }

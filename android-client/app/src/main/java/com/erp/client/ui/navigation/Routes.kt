@@ -1,6 +1,7 @@
 package com.erp.client.ui.navigation
 
 object Routes {
+    const val SERVER_SETTINGS = "server_settings"
     const val LOGIN = "login"
     const val REGISTER = "register"
 
