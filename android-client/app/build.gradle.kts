@@ -15,8 +15,9 @@ android {
         versionCode = 1
         versionName = "1.0"
 
-        // Base URL for the Spring Boot backend. Override per-environment via
-        // -PapiBaseUrl=https://your-host:8080/ or gradle.properties.
+        // First-run default only — the user sets the real backend address inside
+        // the app at runtime, so this no longer needs to match any given LAN.
+        // 10.0.2.2 is the Android emulator's alias for the host's localhost.
         buildConfigField(
             "String",
             "API_BASE_URL",
