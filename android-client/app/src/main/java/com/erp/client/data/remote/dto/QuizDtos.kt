@@ -12,3 +12,13 @@ data class SubmitQuizRequest(
     val studentEmail: String,
     val submittedAnswers: List<String>
 )
+
+data class QuizDto(
+    val id: Long,
+    val title: String,
+    val targetTag: String,
+    val questions: List<String>,
+    val correctAnswers: List<String>,
+    val createdByEmail: String
+)
+

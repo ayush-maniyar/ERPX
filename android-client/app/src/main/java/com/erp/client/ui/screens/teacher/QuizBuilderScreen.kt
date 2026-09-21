@@ -36,6 +36,7 @@ import com.erp.client.ui.components.LoadingIndicator
 import com.erp.client.ui.components.SuccessText
 import com.erp.client.viewmodel.QuizViewModel
 import com.erp.client.viewmodel.UiState
+import androidx.compose.runtime.LaunchedEffect
 
 private data class QuestionEntry(var question: String = "", var answer: String = "")
 
@@ -50,6 +51,11 @@ fun QuizBuilderScreen(
     val entries = remember { mutableStateListOf(QuestionEntry()) }
 
     val createQuizState by quizViewModel.createQuizState.collectAsState()
+    val teacherQuizzes by quizViewModel.teacherQuizzes.collectAsState()
+
+    LaunchedEffect(Unit) {
+        quizViewModel.loadTeacherQuizzes()
+    }
 
     Scaffold(
         topBar = {
@@ -131,13 +137,6 @@ fun QuizBuilderScreen(
                 Text("+ Add Question")
             }
 
-            when (val state = createQuizState) {
-                is UiState.Loading -> LoadingIndicator()
-                is UiState.Error -> ErrorText(state.message)
-                is UiState.Success -> SuccessText(state.data)
-                else -> {}
-            }
-
             Button(
                 onClick = {
                     quizViewModel.createQuiz(
@@ -150,6 +149,87 @@ fun QuizBuilderScreen(
                 modifier = Modifier.fillMaxWidth().padding(top = 16.dp, bottom = 24.dp)
             ) {
                 Text("Publish Quiz")
+            }
+            
+            when (val state = createQuizState) {
+                is UiState.Loading -> LoadingIndicator()
+
+                is UiState.Error -> ErrorText(state.message)
+
+                is UiState.Success -> {
+                    SuccessText("Quiz created successfully!")
+
+                    Text(
+                        text = "Quiz ID: ${state.data.id}",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(top = 4.dp)
+                    )
+                }
+
+                else -> {}
+            }
+
+            Text(
+                text = "My Quizzes",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.padding(top = 24.dp)
+            )
+
+            when (val state = teacherQuizzes) {
+
+                is UiState.Loading -> {
+                    LoadingIndicator()
+                }
+
+                is UiState.Error -> {
+                    ErrorText(state.message)
+                }
+
+                is UiState.Success -> {
+
+                    if (state.data.isEmpty()) {
+
+                        Text(
+                            text = "No quizzes created yet.",
+                            modifier = Modifier.padding(top = 8.dp)
+                        )
+
+                    } else {
+
+                        state.data.forEach { quiz ->
+
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = 8.dp)
+                            ) {
+                                Column(
+                                    modifier = Modifier.padding(12.dp)
+                                ) {
+                                    Text(
+                                        text = quiz.title,
+                                        style = MaterialTheme.typography.titleMedium
+                                    )
+
+                                    Text(
+                                        text = "Quiz ID: ${quiz.id}",
+                                        modifier = Modifier.padding(top = 4.dp)
+                                    )
+
+                                    Text(
+                                        text = "Class: ${quiz.targetTag}"
+                                    )
+
+                                    Text(
+                                        text = "Questions: ${quiz.questions.size}"
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+                else -> {}
             }
         }
     }

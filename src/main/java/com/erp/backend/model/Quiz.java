@@ -10,6 +10,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Quiz {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -25,4 +26,7 @@ public class Quiz {
 
     @ElementCollection
     private List<String> correctAnswers;
+
+    @Column(nullable = false)
+    private String createdByEmail;
 }

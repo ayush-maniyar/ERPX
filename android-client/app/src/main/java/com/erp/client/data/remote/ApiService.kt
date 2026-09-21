@@ -12,6 +12,7 @@ import com.erp.client.data.remote.dto.RegisterRequest
 import com.erp.client.data.remote.dto.SendTagEmailRequest
 import com.erp.client.data.remote.dto.SubmitQuizRequest
 import com.erp.client.data.remote.dto.VideoClassDto
+import com.erp.client.data.remote.dto.QuizDto
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -36,7 +37,13 @@ interface ApiService {
     suspend fun sendEmailByTag(@Body request: SendTagEmailRequest): Response<MessageResponse>
 
     @POST("api/quiz/create")
-    suspend fun createQuiz(@Body request: CreateQuizRequest): Response<MessageResponse>
+    suspend fun createQuiz(@Body request: CreateQuizRequest): Response<QuizDto>
+
+    @GET("api/quiz/my-quizzes")
+    suspend fun getMyQuizzes(): Response<List<QuizDto>>
+
+    @GET("api/quiz/available")
+    suspend fun getAvailableQuizzes(): Response<List<QuizDto>>
 
     @POST("api/quiz/submit")
     suspend fun submitQuiz(@Body request: SubmitQuizRequest): Response<MessageResponse>

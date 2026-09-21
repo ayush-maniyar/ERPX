@@ -8,6 +8,7 @@ import com.erp.client.data.remote.safeApiCall
 import com.erp.client.domain.model.Attendance
 import com.erp.client.domain.model.Role
 import com.erp.client.domain.model.StudentSummary
+import com.erp.client.data.remote.dto.QuizDto
 
 class QuizRepository(private val apiService: ApiService) {
 
@@ -16,13 +17,28 @@ class QuizRepository(private val apiService: ApiService) {
         targetTag: String,
         questions: List<String>,
         correctAnswers: List<String>
-    ): ApiResult<String> {
-        val result = safeApiCall {
-            apiService.createQuiz(CreateQuizRequest(title, targetTag, questions, correctAnswers))
+    ): ApiResult<QuizDto> {
+        return safeApiCall {
+            apiService.createQuiz(
+                CreateQuizRequest(
+                    title,
+                    targetTag,
+                    questions,
+                    correctAnswers
+                )
+            )
         }
-        return when (result) {
-            is ApiResult.Success -> ApiResult.Success(result.data.message)
-            is ApiResult.Failure -> result
+    }
+
+    suspend fun getMyQuizzes(): ApiResult<List<QuizDto>> {
+        return safeApiCall {
+            apiService.getMyQuizzes()
+        }
+    }
+
+    suspend fun getAvailableQuizzes(): ApiResult<List<QuizDto>> {
+        return safeApiCall {
+            apiService.getAvailableQuizzes()
         }
     }
 

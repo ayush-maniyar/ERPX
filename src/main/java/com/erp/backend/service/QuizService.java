@@ -25,14 +25,24 @@ public class QuizService {
     @Autowired
     private AttendanceRepository attendanceRepository;
 
-    public String createQuiz(CreateQuizRequest request) {
+    public Quiz createQuiz(CreateQuizRequest request, String teacherEmail) {
         Quiz quiz = new Quiz();
+
         quiz.setTitle(request.getTitle());
         quiz.setTargetTag(request.getTargetTag());
         quiz.setQuestions(request.getQuestions());
         quiz.setCorrectAnswers(request.getCorrectAnswers());
-        quizRepository.save(quiz);
-        return "Quiz created successfully!";
+        quiz.setCreatedByEmail(teacherEmail);
+
+        return quizRepository.save(quiz);
+    }
+
+    public List<Quiz> getTeacherQuizzes(String teacherEmail) {
+        return quizRepository.findByCreatedByEmail(teacherEmail);
+    }
+
+    public List<Quiz> getAvailableQuizzes() {
+        return quizRepository.findAll();
     }
 
     public String submitQuiz(SubmitQuizRequest request) {
